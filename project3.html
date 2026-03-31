@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project 3 | Ziwei Dou</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, rgba(250, 252, 254, 0.98) 0%, rgba(240, 245, 250, 0.98) 100%);
+      padding: 40px 20px;
+      font-family: 'Times New Roman', '宋体', SimSun, serif;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Times New Roman', '黑体', SimHei, sans-serif;
+    }
+
+    .songti {
+      font-family: '宋体', SimSun, serif;
+    }
+
+    .kaiti {
+      font-family: '楷体', KaiTi, serif;
+    }
+
+    .times {
+      font-family: 'Times New Roman', serif;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #2c3e50;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+
+    .back-link:hover {
+      background: #fff;
+      transform: translateX(-3px);
+    }
+
+    .project-header-fixed {
+      max-width: 800px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    .project-header-fixed h1 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    .project-header-fixed p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .container {
+      width: 800px;
+      max-width: 90%;
+      height: 550px;
+      margin: 0 auto;
+      position: relative;
+      perspective: 1200px;
+    }
+
+    .card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 50px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      overflow-y: auto;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+    }
+
+    .card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #34495e;
+    }
+
+    .card p,
+    .card ul {
+      line-height: 1.8;
+      color: #555;
+      font-size: 1rem;
+    }
+
+    .card ul {
+      padding-left: 20px;
+    }
+
+    .active {
+      transform: translateX(0) rotateY(0deg) scale(1);
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .next {
+      transform: translateX(80px) rotateY(20deg) scale(0.95);
+      opacity: 0.6;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .exit {
+      transform: translateX(-120px) rotateY(-30deg) scale(0.9);
+      opacity: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .img-container {
+      position: relative;
+      display: block;
+      margin: 20px auto;
+      border-radius: 12px;
+      overflow: hidden;
+      line-height: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .img-container img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .card img {
+      max-width: 400px;
+      width: 100%;
+      border-radius: 0;
+      cursor: zoom-in;
+      transition: transform 0.3s;
+      box-shadow: none;
+      display: block;
+      overflow: hidden;
+    }
+
+    .card img:hover {
+      transform: scale(1.02);
+    }
+
+    .sticky-note {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ffd54f;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      color: #333;
+      border-radius: 4px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      transform: rotate(-3deg);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .sticky-note::before {
+      content: '📌';
+      margin-right: 4px;
+    }
+
+    .img-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      cursor: zoom-out;
+    }
+
+    .img-modal.show {
+      display: flex;
+    }
+
+    .img-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+    }
+
+    .buttons {
+      position: absolute;
+      bottom: -70px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 200;
+      pointer-events: auto;
+    }
+
+    button {
+      pointer-events: auto;
+      padding: 10px 20px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #2c3e50;
+    }
+
+    button:hover:not(:disabled) {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .slide-indicator {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: rgba(0, 0, 0, 0.7);
+      width: 30px;
+      border-radius: 5px;
+    }
+
+    .lang-toggle {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+    }
+
+    .lang-btn {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .lang-btn.active {
+      background: #2c3e50;
+      color: white;
+      border-color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="research.html" class="back-link" data-en="← Back" data-zh="← 返回">← Back</a>
+
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="zh">中文</button>
+  </div>
+
+  <div class="project-header-fixed">
+    <h1 data-en="AI Emotional Support Response Styles Research" data-zh="AI情绪支持的回应风格研究">
+      AI情绪支持的回应风格研究
+    </h1>
+    <p data-en="As generative AI transitions from tools to emotional interaction partners, college students increasingly use it for emotional expression and regulation. This study systematically compares different empathy-advice ratios in AI responses and reveals the core mechanisms of AI emotional support."
+      data-zh="随着生成式AI从工具转向情感交互对象，大学生开始将其作为情绪倾诉与调节的重要渠道。本研究系统比较不同"共情—建议配比"的AI回应方式，并揭示AI情绪支持的核心作用机制。">
+      随着生成式AI从工具转向情感交互对象，大学生开始将其作为情绪倾诉与调节的重要渠道。本研究系统比较不同"共情—建议配比"的AI回应方式，并揭示AI情绪支持的核心作用机制。
+    </p>
+  </div>
+
+  <div class="container">
+
+    <!-- Card 1: Research Question -->
+    <div class="card active">
+      <h2 data-en="Research Question" data-zh="研究问题">研究问题</h2>
+      <p class="songti" data-en="As generative AI transitions from tools to emotional interaction partners, college students increasingly use it as an important channel for emotional expression and regulation. In this context, this study focuses on a core question:"
+        data-zh="随着生成式AI从工具转向情感交互对象，大学生开始将其作为情绪倾诉与调节的重要渠道。在这一背景下，本研究关注一个核心问题：">
+        随着生成式AI从工具转向情感交互对象，大学生开始将其作为情绪倾诉与调节的重要渠道。在这一背景下，本研究关注一个核心问题：
+      </p>
+      <p class="songti" data-en="When individuals are experiencing negative emotions, should AI responses lean more toward emotional empathy or provide specific advice? Do different response styles produce different effects on emotion regulation?"
+        data-zh="当个体处于负面情绪中时，AI的回应更偏向情绪共情，还是提供具体建议？不同回应风格是否会对情绪调节效果产生差异。">
+        当个体处于负面情绪中时，AI的回应更偏向情绪共情，还是提供具体建议？不同回应风格是否会对情绪调节效果产生差异。
+      </p>
+      <p class="songti" data-en="This study aims to systematically compare different 'empathy-advice ratio' AI response styles and further reveal the core mechanisms of AI emotional support."
+        data-zh="本研究旨在系统比较不同"共情—建议配比"的AI回应方式，并进一步揭示AI情绪支持的核心作用机制。">
+        本研究旨在系统比较不同"共情—建议配比"的AI回应方式，并进一步揭示AI情绪支持的核心作用机制。
+      </p>
+      <h3 data-en="Theoretical Foundation" data-zh="理论基础">理论基础</h3>
+      <p class="kaiti" data-en="Based on Emotion Regulation Theory and CASA Theory, empathy reduces negative experiences through emotional acceptance, while advice changes problem understanding through cognitive reappraisal. This study integrates both into different ratios of AI response styles for comparison."
+        data-zh="基于情绪调节理论与CASA理论，共情通过情绪接纳降低负性体验，建议通过认知重评改变问题理解。本研究将二者整合为不同配比的AI回应风格进行比较。">
+        基于情绪调节理论与CASA理论，共情通过情绪接纳降低负性体验，建议通过认知重评改变问题理解。本研究将二者整合为不同配比的AI回应风格进行比较。
+      </p>
+    </div>
+
+    <!-- Card 2: Preliminary Research -->
+    <div class="card">
+      <h2 data-en="Preliminary Research" data-zh="前期研究">前期研究</h2>
+      <p class="songti" data-en="Analysis of mainstream large language models' responses revealed stable differences in emotional support styles: some lean toward empathy (approximately 3:1), some toward advice (approximately 1:3), and some are relatively balanced (approximately 1:1)."
+        data-zh="对主流大模型回复进行分析发现，其情绪支持风格存在稳定差异：有的偏共情（约3:1），有的偏建议（约1:3），也有相对均衡（约1:1）。">
+        对主流大模型回复进行分析发现，其情绪支持风格存在稳定差异：有的偏共情（约<span class="times">3:1</span>），有的偏建议（约<span class="times">1:3</span>），也有相对均衡（约<span class="times">1:1</span>）。
+      </p>
+      <p class="songti" data-en="Further evaluation showed that models with relatively balanced empathy and advice performed best. Among them, Gemini scored highest (M = 12.45), followed by DeepSeek (M = 11.92), significantly outperforming other models. Therefore, while ensuring accessibility and stability, DeepSeek-V3 was ultimately selected as the experimental base model, with its output style controlled through prompts."
+        data-zh="进一步评估显示，共情与建议相对均衡的模型表现最佳。其中，Gemini得分最高（M = 12.45），DeepSeek次之（M = 11.92），显著优于其他模型。因此，在保证可接入性与稳定性的前提下，最终选用 DeepSeek-V3 作为实验底座模型，并通过提示词控制其输出风格。">
+        进一步评估显示，共情与建议相对均衡的模型表现最佳。其中，<span class="times">Gemini</span>得分最高（<span class="times">M = 12.45</span>），<span class="times">DeepSeek</span>次之（<span class="times">M = 11.92</span>），显著优于其他模型。因此，在保证可接入性与稳定性的前提下，最终选用 <span class="times">DeepSeek-V3</span> 作为实验底座模型，并通过提示词控制其输出风格。
+      </p>
+      <div class="img-container">
+        <img src="project3/微信图片_20260324130528.png" alt="Model Evaluation" class="zoomable">
+        <div class="sticky-note" data-en="Click to enlarge" data-zh="点击放大">点击放大</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Experimental Design & Results -->
+    <div class="card">
+      <h2 data-en="Experimental Design & Core Results" data-zh="实验设计与核心结果">实验设计与核心结果</h2>
+      <h3 data-en="Experimental Design" data-zh="实验设计">实验设计</h3>
+      <p class="songti" data-en="The study employed a mixed design with AI response style (1:1, 1:3, 3:1) as the independent variable and emotional change (PANAS scale: Positive Affect PA, Negative Affect NA) as the dependent variable."
+        data-zh="研究采用混合设计，自变量为AI回应风格（1:1、1:3、3:1），因变量为情绪变化（PANAS量表：正性情绪PA、负性情绪NA）。">
+        研究采用混合设计，自变量为AI回应风格（<span class="times">1:1</span>、<span class="times">1:3</span>、<span class="times">3:1</span>），因变量为情绪变化（<span class="times">PANAS</span>量表：正性情绪<span class="times">PA</span>、负性情绪<span class="times">NA</span>）。
+      </p>
+      <p class="songti" data-en="Valid sample N = 97. After inducing negative emotions through autobiographical memory, participants engaged in 3-10 rounds of conversation with AI and completed pre- and post-tests."
+        data-zh="有效样本 N = 97。实验通过自传体记忆诱发负面情绪后，被试与AI进行3–10轮对话，并完成前后测。">
+        有效样本 <span class="times">N = 97</span>。实验通过自传体记忆诱发负面情绪后，被试与AI进行<span class="times">3–10</span>轮对话，并完成前后测。
+      </p>
+      <div class="img-container">
+        <img src="project3/正式实验流程图.png" alt="Experimental Procedure" class="zoomable">
+        <div class="sticky-note" data-en="Click to enlarge" data-zh="点击放大">点击放大</div>
+      </div>
+      <h3 data-en="Core Results" data-zh="核心结果">核心结果</h3>
+      <p class="songti" data-en="Different response styles showed no significant differences in emotion regulation effects (PA_post: F(2,93)=0.000, p=1.000; NA_post: F(2,93)=0.029, p=.972), indicating that the empathy-advice ratio itself is not a key factor."
+        data-zh="不同回应风格在情绪调节效果上无显著差异（PA_post: F(2,93)=0.000, p=1.000；NA_post: F(2,93)=0.029, p=.972），说明共情与建议比例本身并非关键因素。">
+        不同回应风格在情绪调节效果上无显著差异（<span class="times">PA_post: F(2,93)=0.000, p=1.000；NA_post: F(2,93)=0.029, p=.972</span>），说明共情与建议比例本身并非关键因素。
+      </p>
+      <p class="songti" data-en="However, AI interaction overall had significant effects with clear directional differences:"
+        data-zh="但AI互动整体具有显著效果，并呈现出明确的方向性差异：">
+        但AI互动整体具有显著效果，并呈现出明确的方向性差异：
+      </p>
+      <ul class="songti">
+        <li data-en="Positive emotion increase: M = 9.01" data-zh="正性情绪提升：M = 9.01">
+          正性情绪提升：<span class="times">M = 9.01</span>
+        </li>
+        <li data-en="Negative emotion decrease: M = 6.90" data-zh="负性情绪下降：M = 6.90">
+          负性情绪下降：<span class="times">M = 6.90</span>
+        </li>
+        <li data-en="Significant difference: t(96) = -2.72, p = .008" data-zh="差异显著：t(96) = -2.72, p = .008">
+          差异显著：<span class="times">t(96) = -2.72, p = .008</span>
+        </li>
+      </ul>
+      <p class="songti" data-en="That is: AI is better at enhancing positive emotions rather than directly eliminating negative emotions."
+        data-zh="即：AI更擅长提升正性情绪，而非直接消除负性情绪。">
+        即：AI更擅长提升正性情绪，而非直接消除负性情绪。
+      </p>
+      <p class="songti" data-en="Additionally, baseline negative emotion has strong predictive power for intervention effects (β = .759, R² = .603, p < .001), indicating that the worse the initial emotion, the greater the improvement. Emotion enhancement and reduction are significantly positively correlated (r = .642, p < .001)."
+        data-zh="此外，基线负性情绪对干预效果具有强预测作用（β = .759, R² = .603, p < .001），表明初始情绪越差，改善幅度越大。情绪提升与下降之间呈显著正相关（r = .642, p < .001）。">
+        此外，基线负性情绪对干预效果具有强预测作用（<span class="times">β = .759, R² = .603, p < .001</span>），表明初始情绪越差，改善幅度越大。情绪提升与下降之间呈显著正相关（<span class="times">r = .642, p < .001</span>）。
+      </p>
+    </div>
+
+    <!-- Card 4: Mechanism & Conclusion -->
+    <div class="card">
+      <h2 data-en="Mechanism & Conclusion" data-zh="机制结论">机制结论</h2>
+      <p class="songti" data-en="The core mechanism of AI emotion regulation is not through reducing negative emotions, but through arousing positive emotions, thereby indirectly achieving overall emotional state improvement. This process confirms that positive emotions have the effect of offsetting negative emotions and can guide individuals into a virtuous cycle of emotional improvement."
+        data-zh="AI情绪调节的核心机制并非通过减少负性情绪，而是通过唤起正性情绪，从而间接实现整体情绪状态的改善。这一过程证实了积极情绪具有抵消负性情绪影响的作用，并能引导个体进入情绪改善的良性循环。">
+        AI情绪调节的核心机制并非通过减少负性情绪，而是通过唤起正性情绪，从而间接实现整体情绪状态的改善。这一过程证实了积极情绪具有抵消负性情绪影响的作用，并能引导个体进入情绪改善的良性循环。
+      </p>
+      <div class="img-container">
+        <img src="project3/基线负性情绪与负性情绪缓解程度的拟合图.png" alt="Baseline Emotion Effect" class="zoomable">
+        <div class="sticky-note" data-en="Click to enlarge" data-zh="点击放大">点击放大</div>
+      </div>
+      <p class="songti" data-en="Meanwhile, interaction word count showed no significant relationship with effects (p > .05), indicating that regulation effects depend on response quality and sense of support, rather than the amount of expression."
+        data-zh="同时，互动字数与效果无显著关系（p > .05），说明调节效果依赖于回应质量与支持感，而非表达量的多少。">
+        同时，互动字数与效果无显著关系（<span class="times">p > .05</span>），说明调节效果依赖于回应质量与支持感，而非表达量的多少。
+      </p>
+      <h3 data-en="Research Conclusion" data-zh="研究结论">研究结论</h3>
+      <p class="songti" data-en="The key to AI emotional support lies not in the ratio of empathy to advice, but in whether it can provide high-quality responses and effectively stimulate positive emotions. College students show high adaptability to different response styles; as long as AI possesses basic emotional understanding and problem-response capabilities, it can produce stable regulation effects."
+        data-zh="AI情绪支持的关键不在于共情与建议的比例，而在于是否能够提供高质量回应并有效激发正性情绪。大学生对不同回应风格具有较高适应性，只要AI具备基本的情绪理解与问题回应能力，即可产生稳定的调节效果。">
+        AI情绪支持的关键不在于共情与建议的比例，而在于是否能够提供高质量回应并有效激发正性情绪。大学生对不同回应风格具有较高适应性，只要AI具备基本的情绪理解与问题回应能力，即可产生稳定的调节效果。
+      </p>
+    </div>
+
+    <!-- Card 5: Innovation & Platform -->
+    <div class="card">
+      <h2 data-en="Innovation & AI Platform" data-zh="创新点与AI平台搭建">创新点与AI平台搭建</h2>
+      <h3 data-en="AI Platform Development" data-zh="AI平台搭建">AI平台搭建</h3>
+      <p class="songti" data-en="This study constructed a complete human-AI interaction experimental platform:"
+        data-zh="本研究构建了完整的人机交互实验平台：">
+        本研究构建了完整的人机交互实验平台：
+      </p>
+      <ul class="songti">
+        <li data-en="Model Layer: Based on DeepSeek-V3, controlling empathy-advice ratio (1:1 / 1:3 / 3:1) through prompts"
+          data-zh="模型层：基于 DeepSeek-V3，通过Prompt控制共情-建议比例（1:1 / 1:3 / 3:1）">
+          <strong>模型层：</strong>基于 <span class="times">DeepSeek-V3</span>，通过<span class="times">Prompt</span>控制共情-建议比例（<span class="times">1:1 / 1:3 / 3:1</span>）
+        </li>
+        <li data-en="Backend: Python server deployed on Tencent Cloud, responsible for API calls and data forwarding"
+          data-zh="后端：Python服务器部署于腾讯云，负责API调用与数据转发">
+          <strong>后端：</strong><span class="times">Python</span>服务器部署于腾讯云，负责<span class="times">API</span>调用与数据转发
+        </li>
+        <li data-en="Frontend: Web page + JavaScript, implementing dialogue interface and process control"
+          data-zh="前端：网页 + JavaScript，实现对话界面与流程控制">
+          <strong>前端：</strong>网页 + <span class="times">JavaScript</span>，实现对话界面与流程控制
+        </li>
+        <li data-en="Communication: AJAX asynchronous requests, enabling real-time dialogue"
+          data-zh="通信方式：AJAX异步请求，实现实时对话">
+          <strong>通信方式：</strong><span class="times">AJAX</span>异步请求，实现实时对话
+        </li>
+        <li data-en="Limitation Mechanism: Single response ≤120 characters, ensuring interaction fluency and experimental consistency"
+          data-zh="限制机制：单次回复≤120字，保证交互流畅性与实验一致性">
+          <strong>限制机制：</strong>单次回复≤<span class="times">120</span>字，保证交互流畅性与实验一致性
+        </li>
+      </ul>
+      <p class="songti" data-en="This architecture solved the problem of frontend inability to directly call APIs (CORS), achieving a real, controllable, and reproducible human-AI interaction experimental environment."
+        data-zh="该架构解决了前端无法直接调用API（CORS）的问题，实现了真实、可控、可复现的人机交互实验环境。">
+        该架构解决了前端无法直接调用<span class="times">API</span>（<span class="times">CORS</span>）的问题，实现了真实、可控、可复现的人机交互实验环境。
+      </p>
+      <div class="img-container">
+        <img src="project3/Experimental Design to-2026-03-24-042149.png" alt="Platform Architecture" class="zoomable">
+        <div class="sticky-note" data-en="Click to enlarge" data-zh="点击放大">点击放大</div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="buttons">
+      <button id="prevBtn" data-en="← Previous" data-zh="← 上一页">← Previous</button>
+      <div class="slide-indicator">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <button id="nextBtn" data-en="Next →" data-zh="下一页 →">Next →</button>
+    </div>
+
+  </div>
+
+  <!-- Image Modal -->
+  <div class="img-modal" id="imgModal">
+    <img src="" alt="Enlarged" id="modalImg">
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll(".card");
+    const dots = document.querySelectorAll(".dot");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const imgModal = document.getElementById("imgModal");
+    const modalImg = document.getElementById("modalImg");
+    const langBtns = document.querySelectorAll(".lang-btn");
+
+    let current = 0;
+    let currentLang = "en";
+
+    function updateCards() {
+      cards.forEach((card, i) => {
+        card.classList.remove("active", "next", "exit");
+        if (i === current) {
+          card.classList.add("active");
+        } else if (i === current + 1) {
+          card.classList.add("next");
+        } else {
+          card.classList.add("exit");
+        }
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === current);
+      });
+
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === cards.length - 1;
+    }
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      document.querySelectorAll("[data-en]").forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+        if (lang === 'en') {
+          el.style.fontFamily = "'Times New Roman', serif";
+        } else {
+          el.style.fontFamily = "";
+        }
+      });
+      langBtns.forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+      });
+    }
+
+    langBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchLanguage(btn.getAttribute("data-lang"));
+      });
+    });
+
+    function next() {
+      if (current < cards.length - 1) {
+        current++;
+        updateCards();
+      }
+    }
+
+    function prev() {
+      if (current > 0) {
+        current--;
+        updateCards();
+      }
+    }
+
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener("click", () => {
+        current = i;
+        updateCards();
+      });
+    });
+
+    document.querySelectorAll(".zoomable").forEach(img => {
+      img.addEventListener("click", (e) => {
+        e.stopPropagation();
+        modalImg.src = img.src;
+        imgModal.classList.add("show");
+      });
+    });
+
+    imgModal.addEventListener("click", () => {
+      imgModal.classList.remove("show");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "Escape") imgModal.classList.remove("show");
+    });
+
+    updateCards();
+  </script>
+
+</body>
+
+</html>

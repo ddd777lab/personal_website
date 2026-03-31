@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project 4 | Ziwei Dou</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, rgba(250, 252, 254, 0.98) 0%, rgba(240, 245, 250, 0.98) 100%);
+      padding: 40px 20px;
+      font-family: 'Times New Roman', '宋体', SimSun, serif;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      font-family: '黑体', SimHei, sans-serif;
+    }
+
+    .songti {
+      font-family: '宋体', SimSun, serif;
+    }
+
+    .kaiti {
+      font-family: '楷体', KaiTi, serif;
+    }
+
+    .times {
+      font-family: 'Times New Roman', serif;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #2c3e50;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+
+    .back-link:hover {
+      background: #fff;
+      transform: translateX(-3px);
+    }
+
+    .project-header-fixed {
+      max-width: 800px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    .project-header-fixed h1 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    .project-header-fixed p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .container {
+      width: 800px;
+      max-width: 90%;
+      height: 550px;
+      margin: 0 auto;
+      position: relative;
+      perspective: 1200px;
+    }
+
+    .card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 50px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      overflow-y: auto;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+    }
+
+    .card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #34495e;
+    }
+
+    .card p,
+    .card ul {
+      line-height: 1.8;
+      color: #555;
+      font-size: 1rem;
+    }
+
+    .card ul {
+      padding-left: 20px;
+    }
+
+    .active {
+      transform: translateX(0) rotateY(0deg) scale(1);
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .next {
+      transform: translateX(80px) rotateY(20deg) scale(0.95);
+      opacity: 0.6;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .exit {
+      transform: translateX(-120px) rotateY(-30deg) scale(0.9);
+      opacity: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .img-container {
+      position: relative;
+      display: block;
+      margin: 20px auto;
+      border-radius: 12px;
+      overflow: hidden;
+      line-height: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .img-container img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .card img {
+      max-width: 400px;
+      width: 100%;
+      border-radius: 0;
+      cursor: zoom-in;
+      transition: transform 0.3s;
+      box-shadow: none;
+      display: block;
+      overflow: hidden;
+    }
+
+    .card img:hover {
+      transform: scale(1.02);
+    }
+
+    .sticky-note {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ffd54f;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      color: #333;
+      border-radius: 4px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      transform: rotate(-3deg);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .sticky-note::before {
+      content: '📌';
+      margin-right: 4px;
+    }
+
+    .img-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      cursor: zoom-out;
+    }
+
+    .img-modal.show {
+      display: flex;
+    }
+
+    .img-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+    }
+
+    .buttons {
+      position: absolute;
+      bottom: -70px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 200;
+      pointer-events: auto;
+    }
+
+    button {
+      pointer-events: auto;
+      padding: 10px 20px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #2c3e50;
+    }
+
+    button:hover:not(:disabled) {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .slide-indicator {
+      display: flex;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: rgba(0, 0, 0, 0.7);
+      width: 30px;
+      border-radius: 5px;
+    }
+
+    .lang-toggle {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+    }
+
+    .lang-btn {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .lang-btn.active {
+      background: #2c3e50;
+      color: white;
+      border-color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="research.html" class="back-link" data-en="← Back" data-zh="← 返回">← Back</a>
+
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="zh">中文</button>
+  </div>
+
+  <div class="project-header-fixed">
+    <h1 data-en="Development & Validation of Rejection Sensitivity Scale" data-zh="拒绝敏感性量表编制与信效度检验">
+      拒绝敏感性量表编制与信效度检验
+    </h1>
+    <p class="songti" data-en="This study developed a multidimensional rejection sensitivity scale based on the three-dimensional process model (anticipatory anxiety, perception sensitivity, emotional reactivity). Through three stages of research (N=120, 367, 252), we constructed a 36-item scale with good reliability and validity. ESEM analysis revealed significant overlap between dimensions, suggesting rejection sensitivity operates as an integrated psychological process rather than independent components."
+      data-zh="本研究基于三维过程模型（预期焦虑、感知敏感、情绪反应）编制多维度拒绝敏感性量表。通过三阶段研究（N=120、367、252），构建了包含36个项目的量表，具有良好的信效度。ESEM分析揭示维度间存在显著重叠，表明拒绝敏感性是一个整合的心理过程而非独立成分。">
+      本研究基于三维过程模型（预期焦虑、感知敏感、情绪反应）编制多维度拒绝敏感性量表。通过三阶段研究（<span class="times">N=120</span>、<span class="times">367</span>、<span class="times">252</span>），构建了包含<span class="times">36</span>个项目的量表，具有良好的信效度。<span class="times">ESEM</span>分析揭示维度间存在显著重叠，表明拒绝敏感性是一个整合的心理过程而非独立成分。
+    </p>
+  </div>
+
+  <div class="container">
+
+    <!-- Card 1: Research Question -->
+    <div class="card active">
+      <h2 data-en="Research Question" data-zh="研究问题">研究问题</h2>
+      <p class="songti" data-en="This study focuses on how to conduct more refined structural measurement of rejection sensitivity in the Chinese cultural context. Existing scales mostly use a single scoring method, making it difficult to distinguish between individuals' expectations before rejection, cognitive processing during situations, and behavioral responses after rejection, while lacking coverage of Chinese interpersonal situations. Therefore, this study attempts to construct a measurement tool that can distinguish different psychological processes and has a local situational foundation."
+        data-zh="本研究关注如何在中国文化背景下，对拒绝敏感性进行更精细的结构化测量。现有量表多采用单一得分方式，难以区分个体在被拒绝前的预期、情境中的认知加工以及被拒绝后的行为反应，同时缺乏对中国人际情境的覆盖。因此，本研究尝试构建一个能够区分不同心理过程、且具有本土情境基础的测量工具。">
+        本研究关注如何在中国文化背景下，对拒绝敏感性进行更精细的结构化测量。现有量表多采用单一得分方式，难以区分个体在被拒绝前的预期、情境中的认知加工以及被拒绝后的行为反应，同时缺乏对中国人际情境的覆盖。因此，本研究尝试构建一个能够区分不同心理过程、且具有本土情境基础的测量工具。
+      </p>
+      <h3 data-en="Theoretical Foundation" data-zh="理论基础">理论基础</h3>
+      <p class="kaiti" data-en="The study is based on a three-dimensional process model of rejection sensitivity, understanding it as a continuous psychological processing system: individuals form expectations of rejection before interaction, make negative interpretations of ambiguous cues during interaction, and produce behavioral responses after confirming rejection. This process has cyclical characteristics, where behavioral responses further reinforce original expectations. In actual data, high correlations exist between different dimensions, suggesting these psychological processes are not completely independent at the experiential level."
+        data-zh="研究基于拒绝敏感性的三维过程模型，将其理解为一个连续的心理加工系统：个体在互动前形成被拒绝的预期，在互动中对模糊线索进行消极解读，并在确认拒绝后产生行为反应。这一过程具有循环特征，即行为反应会进一步强化原有预期。在实际数据中，不同维度之间存在较高相关，提示这些心理过程在经验层面并非完全独立。">
+        研究基于拒绝敏感性的三维过程模型，将其理解为一个连续的心理加工系统：个体在互动前形成被拒绝的预期，在互动中对模糊线索进行消极解读，并在确认拒绝后产生行为反应。这一过程具有循环特征，即行为反应会进一步强化原有预期。在实际数据中，不同维度之间存在较高相关，提示这些心理过程在经验层面并非完全独立。
+      </p>
+    </div>
+
+    <!-- Card 2: Research Design -->
+    <div class="card">
+      <h2 data-en="Research Design & Methods" data-zh="研究设计与方法">研究设计与方法</h2>
+      <div class="img-container">
+        <img src="project4/流程图.png" alt="Research Flow" class="zoomable">
+        <div class="sticky-note" data-en="Click to enlarge" data-zh="点击放大">点击放大</div>
+      </div>
+      <h3 data-en="Three-Stage Design" data-zh="三阶段设计">三阶段设计</h3>
+      <p class="songti" data-en="Study 1 (N=120): Item generation and preliminary screening. Study 2 (N=367): Exploratory Factor Analysis (EFA). Study 3 (N=252): Confirmatory Factor Analysis (CFA) and Exploratory Structural Equation Modeling (ESEM)."
+        data-zh="研究1（N=120）：项目生成与初步筛选。研究2（N=367）：探索性因素分析（EFA）。研究3（N=252）：验证性因素分析（CFA）与探索性结构方程模型（ESEM）。">
+        <strong>研究1</strong>（<span class="times">N=120</span>）：项目生成与初步筛选<br>
+        <strong>研究2</strong>（<span class="times">N=367</span>）：探索性因素分析（<span class="times">EFA</span>）<br>
+        <strong>研究3</strong>（<span class="times">N=252</span>）：验证性因素分析（<span class="times">CFA</span>）与探索性结构方程模型（<span class="times">ESEM</span>）
+      </p>
+      <h3 data-en="Measurement" data-zh="测量方式">测量方式</h3>
+      <p class="songti" data-en="A 7-point rating scale was used (1=completely disagree, 7=completely agree), requiring participants to self-assess their rejection sensitivity in interpersonal situations."
+        data-zh="采用7点评分量表（1=完全不符合，7=完全符合），要求被试对人际情境中的拒绝敏感性进行自我评估。">
+        采用<span class="times">7</span>点评分量表（<span class="times">1</span>=完全不符合，<span class="times">7</span>=完全符合），要求被试对人际情境中的拒绝敏感性进行自我评估。
+      </p>
+    </div>
+
+    <!-- Card 3: Scale Construction -->
+    <div class="card">
+      <h2 data-en="Scale Construction & Data Analysis" data-zh="量表构建与数据分析">量表构建与数据分析</h2>
+      <div class="img-container">
+        <img src="project4/量表.png" alt="Scale Structure" class="zoomable">
+        <div class="sticky-note" data-en="Click to enlarge" data-zh="点击放大">点击放大</div>
+      </div>
+      <h3 data-en="Scale Structure" data-zh="量表结构">量表结构</h3>
+      <p class="songti" data-en="The scale covers 12 interpersonal situations (family, romantic relationships, friendships, academic settings) and includes 36 items measuring three dimensions: anticipatory anxiety (12 items), perception sensitivity (12 items), and emotional reactivity (12 items)."
+        data-zh="量表涵盖12个人际情境（家庭、恋爱、友谊、学业），共36个项目，测量三个维度：预期焦虑（12题）、感知敏感（12题）、情绪反应（12题）。">
+        量表涵盖<span class="times">12</span>个人际情境（家庭、恋爱、友谊、学业），共<span class="times">36</span>个项目，测量三个维度：预期焦虑（<span class="times">12</span>题）、感知敏感（<span class="times">12</span>题）、情绪反应（<span class="times">12</span>题）。
+      </p>
+      <h3 data-en="Factor Structure" data-zh="因素结构">因素结构</h3>
+      <p class="songti" data-en="EFA results showed a clear three-factor structure explaining 67.36% of total variance. CFA confirmed good model fit: χ²/df=2.628, CFI=0.936, TLI=0.931, RMSEA=0.081, SRMR=0.054."
+        data-zh="EFA结果显示清晰的三因素结构，累计解释67.36%的总方差。CFA验证模型拟合良好：χ²/df=2.628, CFI=0.936, TLI=0.931, RMSEA=0.081, SRMR=0.054。">
+        <span class="times">EFA</span>结果显示清晰的三因素结构，累计解释<span class="times">67.36%</span>的总方差。<span class="times">CFA</span>验证模型拟合良好：<span class="times">χ²/df=2.628, CFI=0.936, TLI=0.931, RMSEA=0.081, SRMR=0.054</span>。
+      </p>
+      <p class="songti" data-en="However, ESEM analysis revealed significant cross-loadings between dimensions (correlation coefficients 0.70-0.85), indicating that the three psychological processes are highly integrated in actual experience rather than operating independently."
+        data-zh="但ESEM分析揭示维度间存在显著交叉负荷（相关系数0.70-0.85），表明三个心理过程在实际体验中高度整合，而非独立运作。">
+        但<span class="times">ESEM</span>分析揭示维度间存在显著交叉负荷（相关系数<span class="times">0.70-0.85</span>），表明三个心理过程在实际体验中高度整合，而非独立运作。
+      </p>
+    </div>
+
+    <!-- Card 4: Reliability & Validity -->
+    <div class="card">
+      <h2 data-en="Reliability, Validity & Conclusion" data-zh="信效度与结论">信效度与结论</h2>
+      <h3 data-en="Reliability Analysis" data-zh="信度分析">信度分析</h3>
+      <p class="songti" data-en="The scale demonstrated excellent internal consistency: Total scale α=0.951, Anticipatory Anxiety CR=0.924, Perception Sensitivity CR=0.911, Emotional Reactivity CR=0.831. Test-retest reliability (4-week interval) r=0.847, p<.001."
+        data-zh="量表具有良好的内部一致性：总量表α=0.951，预期焦虑CR=0.924，感知敏感CR=0.911，情绪反应CR=0.831。重测信度（间隔4周）r=0.847, p<.001。">
+        量表具有良好的内部一致性：总量表<span class="times">α=0.951</span>，预期焦虑<span class="times">CR=0.924</span>，感知敏感<span class="times">CR=0.911</span>，情绪反应<span class="times">CR=0.831</span>。重测信度（间隔<span class="times">4</span>周）<span class="times">r=0.847, p<.001</span>。
+      </p>
+      <h3 data-en="Validity Analysis" data-zh="效度分析">效度分析</h3>
+      <p class="songti" data-en="Criterion validity: Significant positive correlations with depression (r=0.58), anxiety (r=0.62), and negative correlations with self-esteem (r=-0.51), all p<.001. Discriminant validity: Can effectively distinguish between high and low rejection sensitivity groups (Cohen's d=1.23)."
+        data-zh="效标效度：与抑郁（r=0.58）、焦虑（r=0.62）显著正相关，与自尊（r=-0.51）显著负相关，均p<.001。区分效度：能有效区分高低拒绝敏感性群体（Cohen's d=1.23）。">
+        效标效度：与抑郁（<span class="times">r=0.58</span>）、焦虑（<span class="times">r=0.62</span>）显著正相关，与自尊（<span class="times">r=-0.51</span>）显著负相关，均<span class="times">p<.001</span>。区分效度：能有效区分高低拒绝敏感性群体（<span class="times">Cohen's d=1.23</span>）。
+      </p>
+      <h3 data-en="Research Conclusion" data-zh="研究结论">研究结论</h3>
+      <p class="songti" data-en="This study successfully developed a multidimensional rejection sensitivity scale suitable for the Chinese cultural context. Although the scale distinguishes three theoretical dimensions, ESEM analysis reveals that these dimensions exhibit significant overlap in actual measurement, suggesting rejection sensitivity operates as an integrated psychological process rather than independent components. This finding has important implications for understanding the nature of rejection sensitivity and designing intervention strategies."
+        data-zh="本研究成功编制了适用于中国文化情境的多维度拒绝敏感性量表。虽然量表区分了三个理论维度，但ESEM分析揭示这些维度在实际测量中呈现显著重叠，提示拒绝敏感性是一个整合的心理过程而非独立成分。这一发现对理解拒绝敏感性的本质及设计干预策略具有重要意义。">
+        本研究成功编制了适用于中国文化情境的多维度拒绝敏感性量表。虽然量表区分了三个理论维度，但<span class="times">ESEM</span>分析揭示这些维度在实际测量中呈现显著重叠，提示拒绝敏感性是一个整合的心理过程而非独立成分。这一发现对理解拒绝敏感性的本质及设计干预策略具有重要意义。
+      </p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="buttons">
+      <button id="prevBtn" data-en="← Previous" data-zh="← 上一页">← Previous</button>
+      <div class="slide-indicator">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <button id="nextBtn" data-en="Next →" data-zh="下一页 →">Next →</button>
+    </div>
+
+  </div>
+
+  <!-- Image Modal -->
+  <div class="img-modal" id="imgModal">
+    <img src="" alt="Enlarged" id="modalImg">
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll(".card");
+    const dots = document.querySelectorAll(".dot");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const imgModal = document.getElementById("imgModal");
+    const modalImg = document.getElementById("modalImg");
+    const langBtns = document.querySelectorAll(".lang-btn");
+
+    let current = 0;
+    let currentLang = "en";
+
+    function updateCards() {
+      cards.forEach((card, i) => {
+        card.classList.remove("active", "next", "exit");
+        if (i === current) {
+          card.classList.add("active");
+        } else if (i === current + 1) {
+          card.classList.add("next");
+        } else {
+          card.classList.add("exit");
+        }
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === current);
+      });
+
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === cards.length - 1;
+    }
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      document.querySelectorAll("[data-en]").forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+        if (lang === 'en') {
+          el.style.fontFamily = "'Times New Roman', serif";
+        } else {
+          el.style.fontFamily = "";
+        }
+      });
+      langBtns.forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+      });
+    }
+
+    langBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchLanguage(btn.getAttribute("data-lang"));
+      });
+    });
+
+    function next() {
+      if (current < cards.length - 1) {
+        current++;
+        updateCards();
+      }
+    }
+
+    function prev() {
+      if (current > 0) {
+        current--;
+        updateCards();
+      }
+    }
+
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener("click", () => {
+        current = i;
+        updateCards();
+      });
+    });
+
+    document.querySelectorAll(".zoomable").forEach(img => {
+      img.addEventListener("click", (e) => {
+        e.stopPropagation();
+        modalImg.src = img.src;
+        imgModal.classList.add("show");
+      });
+    });
+
+    imgModal.addEventListener("click", () => {
+      imgModal.classList.remove("show");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "Escape") imgModal.classList.remove("show");
+    });
+
+    updateCards();
+  </script>
+
+</body>
+
+</html>

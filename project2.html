@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project 2 | Ziwei Dou</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, rgba(250, 252, 254, 0.98) 0%, rgba(240, 245, 250, 0.98) 100%);
+      padding: 40px 20px;
+      font-family: 'Times New Roman', '宋体', SimSun, serif;
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Times New Roman' '黑体', SimHei, sans-serif;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #2c3e50;
+      transition: all 0.3s;
+      z-index: 100;
+    }
+
+    .back-link:hover {
+      background: #fff;
+      transform: translateX(-3px);
+    }
+
+    .project-header-fixed {
+      max-width: 800px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    .project-header-fixed h1 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+
+    .project-header-fixed p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .container {
+      width: 800px;
+      max-width: 90%;
+      height: 550px;
+      margin: 0 auto 150px;
+      position: relative;
+      perspective: 1200px;
+    }
+
+    .card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      padding: 50px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      overflow-y: auto;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+    }
+
+    .card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+    }
+
+    .card h3 {
+      font-size: 1.3rem;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #34495e;
+    }
+
+    .card p,
+    .card ul {
+      line-height: 1.8;
+      color: #555;
+      font-size: 1rem;
+    }
+
+    .card ul {
+      padding-left: 20px;
+    }
+
+    .active {
+      transform: translateX(0) rotateY(0deg) scale(1);
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .next {
+      transform: translateX(80px) rotateY(20deg) scale(0.95);
+      opacity: 0.6;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .exit {
+      transform: translateX(-120px) rotateY(-30deg) scale(0.9);
+      opacity: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .img-container {
+      position: relative;
+      display: block;
+      margin: 20px auto;
+      border-radius: 12px;
+      overflow: hidden;
+      line-height: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .img-container img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .card img {
+      max-width: 400px;
+      width: 100%;
+      border-radius: 0;
+      cursor: zoom-in;
+      transition: transform 0.3s;
+      box-shadow: none;
+      display: block;
+      overflow: hidden;
+    }
+
+    .card img:hover {
+      transform: scale(1.02);
+    }
+
+    .img-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .img-row .img-container {
+      flex: 1;
+      min-width: 150px;
+      max-width: 250px;
+    }
+
+    .sticky-note {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ffd54f;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      color: #333;
+      border-radius: 4px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      transform: rotate(-3deg);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .sticky-note::before {
+      content: '📌';
+      margin-right: 4px;
+    }
+
+    .img-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      cursor: zoom-out;
+    }
+
+    .img-modal.show {
+      display: flex;
+    }
+
+    .img-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+    }
+
+    .buttons {
+      position: absolute;
+      bottom: -70px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      z-index: 200;
+      pointer-events: auto;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      pointer-events: auto;
+    }
+
+    .btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .dots {
+      position: absolute;
+      bottom: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .dot.active-dot {
+      background: #2c3e50;
+      transform: scale(1.3);
+    }
+
+    .lang-toggle {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+    }
+
+    .lang-btn {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .lang-btn.active {
+      background: #2c3e50;
+      color: white;
+      border-color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="index.html" class="back-link" data-en="← Back" data-zh="← 返回">← Back</a>
+
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="zh">中文</button>
+  </div>
+
+  <div class="project-header-fixed">
+    <h1
+      data-en="Why Humans Struggle to Distinguish AI Faces: Evidence from Behavior, Frequency Domain, and Representational Mechanisms"
+      data-zh="人类为何难辨AI人脸：行为、频域与表征机制的证据">人类为何难辨AI人脸：行为、频域与表征机制的证据</h1>
+    <p data-en="This study systematically reveals the mechanisms underlying humans' difficulty in distinguishing high-fidelity AI-generated faces through behavioral decision-making, visual filtering, and deep representation. The experiments found that misjudgments stem from AI faces' own features driving higher evidence accumulation rates, and the mid-to-high frequency energy accumulation is amplified to an effect size of 3.0 after human eye physiological filtering. A cross-layer mediation model confirms that frequency domain anomalies shift high-dimensional representations toward real face prototypes, thereby affecting perceptual judgments. The research demonstrates that discriminative cues are fully preserved in visual representations, but humans are misled by representational-level camouflage and ignore underlying statistical evidence."
+      data-zh="本研究从行为决策、视觉滤波到深层表征，系统揭示人类难以分辨高保真AI生成人脸的机制。实验发现，误判源于AI人脸自身特征驱动了更高的证据积累速度，且其中高频能量堆积经人眼生理滤波后差异放大至效应量3.0。跨层中介模型证实，频域异常通过改变高维表征向真实人脸原型偏移，进而影响知觉判断。研究表明判别线索完整保留于视觉表征中，但人类被表征层伪装误导而忽略底层统计证据。">
+      本研究从行为决策、视觉滤波到深层表征，系统揭示人类难以分辨高保真AI生成人脸的机制。实验发现，误判源于AI人脸自身特征驱动了更高的证据积累速度，且其中高频能量堆积经人眼生理滤波后差异放大至效应量3.0。跨层中介模型证实，频域异常通过改变高维表征向真实人脸原型偏移，进而影响知觉判断。研究表明判别线索完整保留于视觉表征中，但人类被表征层伪装误导而忽略底层统计证据。
+    </p>
+  </div>
+
+  <div class="container">
+
+    <!-- 卡片1 -->
+    <div class="card">
+      <h2 data-en="Research Questions and Framework" data-zh="研究问题与框架">研究问题与框架</h2>
+      <h3 data-en="Research Questions" data-zh="研究问题">研究问题</h3>
+      <p data-en="High-fidelity generative models make face images approach or even exceed the typicality of natural distributions in statistical structure, raising a key question: Does the human visual system still possess stable real-fake discrimination ability under current conditions, and does misjudgment have systematic bias?"
+        data-zh="高保真生成模型使人脸图像在统计结构上逼近甚至超过自然分布的典型性，由此引出一个关键问题：人类视觉系统在当前条件下是否仍具备稳定的真伪判别能力，以及误判是否具有系统性偏向。">
+        高保真生成模型使人脸图像在统计结构上逼近甚至超过自然分布的典型性，由此引出一个关键问题：人类视觉系统在当前条件下是否仍具备稳定的真伪判别能力，以及误判是否具有系统性偏向。</p>
+      <p data-en="A further question is whether this bias stems from subjective bias at the decision level or from structural limitations of the visual processing mechanism itself."
+        data-zh="进一步的问题在于，这种偏差究竟源于决策层的主观偏置，还是源于视觉加工机制本身的结构性限制。">进一步的问题在于，这种偏差究竟源于决策层的主观偏置，还是源于视觉加工机制本身的结构性限制。</p>
+
+      <h3 data-en="Overall Research Framework" data-zh="整体研究框架">整体研究框架</h3>
+      <p data-en="This study constructs a three-layer explanatory path from physical features to cognitive decisions: Image frequency domain structure → Visual representation space → Behavioral decision output."
+        data-zh="本研究构建从物理特征到认知决策的三层解释路径：图像频域结构 → 视觉表征空间 → 行为决策输出。">本研究构建从物理特征到认知决策的三层解释路径：图像频域结构 → 视觉表征空间 → 行为决策输出。</p>
+      <p data-en="Three experiments correspond to different levels:" data-zh="三项实验分别对应不同层级：">三项实验分别对应不同层级：</p>
+      <ul>
+        <li data-en="Experiment 1 characterizes behavioral performance and decision dynamics" data-zh="实验1刻画行为表现与决策动力学">
+          实验1刻画行为表现与决策动力学</li>
+        <li data-en="Experiment 2 examines statistical differences at the image level" data-zh="实验2检验图像层面的统计差异">
+          实验2检验图像层面的统计差异</li>
+        <li data-en="Experiment 3 establishes cross-layer causal chains" data-zh="实验3建立跨层因果链路">实验3建立跨层因果链路</li>
+      </ul>
+
+      <div class="img-container">
+        <img src="project2/流程图.png" alt="研究框架流程图" class="zoomable">
+        <div class="sticky-note" data-en="Framework" data-zh="研究框架">研究框架</div>
+      </div>
+
+      <p data-en="The goal of this framework is to reduce discrimination failure from surface phenomena to computable mechanistic processes."
+        data-zh="该框架的目标在于，将判别失败从表层现象还原为可计算的机制过程。">该框架的目标在于，将判别失败从表层现象还原为可计算的机制过程。</p>
+    </div>
+
+    <!-- 卡片2 -->
+    <div class="card">
+      <h2 data-en="Experiment 1: Behavioral Discrimination Results" data-zh="实验1：行为判别结果">实验1：行为判别结果</h2>
+      <p data-en="In a 2AFC task, participants classified real faces and AI faces. Recognition accuracy was calculated for each participant under AI and Real conditions, and paired-samples t-test was used to directly compare differences between conditions."
+        data-zh="在2AFC任务中，被试对真实人脸与AI人脸进行分类判断。计算每名被试在 AI 条件与 Real 条件下的识别准确率，并采用配对样本 t 检验（paired-samples t-test）直接比较两条件间的差异。">
+        在2AFC任务中，被试对真实人脸与AI人脸进行分类判断。计算每名被试在 AI 条件与 Real 条件下的识别准确率，并采用配对样本 t 检验（paired-samples t-test）直接比较两条件间的差异。</p>
+
+      <div class="img-container">
+        <img src="project2/paired_ttest_figure.png" alt="配对t检验结果" class="zoomable">
+        <div class="sticky-note" data-en="Behavioral Data" data-zh="行为数据">行为数据</div>
+      </div>
+
+      <p data-en="Figure: Paired comparison of recognition accuracy for AI-generated faces vs. real faces (N = 40). A: Individual paired line plot, black line shows mean ± 95% CI; B: Condition mean bar chart; C: Distribution of participant differences (AI accuracy − Real accuracy). Red dashed line indicates chance level (0.5) or zero difference. p < .001."
+        data-zh="<strong>图注：</strong>AI 生成人脸与真实人脸识别准确率的配对比较（N = 40）。A：个体配对折线图，黑线为均值±95% CI；B：条件均值柱状图；C：被试差值（AI准确率 − Real准确率）的分布。红虚线表示随机水平（0.5）或差值为零。p < .001。">
+        <strong>图注：</strong>AI 生成人脸与真实人脸识别准确率的配对比较（N = 40）。A：个体配对折线图，黑线为均值±95% CI；B：条件均值柱状图；C：被试差值（AI准确率 −
+        Real准确率）的分布。红虚线表示随机水平（0.5）或差值为零。p < .001。</p>
+
+          <p data-en="Results showed that recognition accuracy under real conditions was significantly higher than under AI conditions (0.571 vs 0.367), with paired-samples t-test showing significant difference (t(39) = -4.118, p < .001, d = -0.651)."
+            data-zh="结果表明，真实条件下识别准确率显著高于AI条件（0.571 vs 0.367），配对样本t检验显示差异显著（t(39) = -4.118, p < .001, d = -0.651）。">
+            结果表明，真实条件下识别准确率显著高于AI条件（0.571 vs 0.367），配对样本t检验显示差异显著（t(39) = -4.118, p < .001, d=-0.651）。</p>
+              <p data-en="Meanwhile, the discriminability index was negative (d' = -0.17), indicating that participants' overall judgment direction was reversed. Humans are not merely limited in difficulty, but exhibit systematic bias in discrimination direction."
+                data-zh="同时，辨别力指数为负（d' = -0.17），说明被试整体判断方向发生反转，人类并非仅在难度上受限，而是在判别方向上出现系统性偏差。">同时，辨别力指数为负（d' =
+                -0.17），说明被试整体判断方向发生反转，人类并非仅在难度上受限，而是在判别方向上出现系统性偏差。</p>
+    </div>
+
+    <!-- 卡片3 -->
+    <div class="card">
+      <h2 data-en="Experiment 1: Decision Dynamics Mechanism" data-zh="实验1：决策动力学机制">实验1：决策动力学机制</h2>
+      <p data-en="Under the drift diffusion model framework, the decision process was decomposed into parameters. Results showed that AI faces corresponded to higher drift rates (v = 0.3134), while real faces had lower rates (v = 0.1528); starting points were close to neutral levels with no stable bias observed."
+        data-zh="在漂移扩散模型框架下，对决策过程进行参数分解。结果显示，AI人脸对应更高的漂移率（v = 0.3134），而真实人脸较低（v = 0.1528）；起始点接近中性水平，未观察到稳定偏置。">
+        在漂移扩散模型框架下，对决策过程进行参数分解。结果显示，AI人脸对应更高的漂移率（v = 0.3134），而真实人脸较低（v = 0.1528）；起始点接近中性水平，未观察到稳定偏置。</p>
+
+      <div class="img-row">
+        <div class="img-container">
+          <img src="project2/pyDDM.png" alt="DDM模型参数" class="zoomable">
+          <div class="sticky-note" data-en="DDM Parameters" data-zh="DDM参数">DDM参数</div>
+        </div>
+        <div class="img-container">
+          <img src="project2/Rt distribution chart.png" alt="反应时分布" class="zoomable">
+          <div class="sticky-note" data-en="RT Distribution" data-zh="RT分布">RT分布</div>
+        </div>
+        <div class="img-container">
+          <img src="project2/model comparison.png" alt="模型比较" class="zoomable">
+          <div class="sticky-note" data-en="Model Comparison" data-zh="模型对比">模型对比</div>
+        </div>
+      </div>
+
+      <p data-en="Model comparison showed that the drift rate difference model outperformed the bias model."
+        data-zh="模型比较表明，漂移率差异模型优于偏置模型。">模型比较表明，漂移率差异模型优于偏置模型。</p>
+      <p data-en="Misjudgment stems from the evidence accumulation process itself, not from prior tendencies; AI faces provide stronger determinative evidence at the perceptual level, driving the decision process away from the real boundary."
+        data-zh="误判来源于证据积累过程本身，而非先验倾向；AI人脸在感知层面提供了更强的判定证据，从而驱动决策过程偏离真实边界。">
+        误判来源于证据积累过程本身，而非先验倾向；AI人脸在感知层面提供了更强的判定证据，从而驱动决策过程偏离真实边界。</p>
+    </div>
+
+    <!-- 卡片4 -->
+    <div class="card">
+      <h2 data-en="Experiment 2: Frequency Domain Statistical Structure" data-zh="实验2：频域统计结构">实验2：频域统计结构</h2>
+      <h3 data-en="Design" data-zh="设计">设计</h3>
+      <p data-en="Compare spatial frequency distribution differences between real and AI faces, and introduce visual filtering simulation to test perceptibility."
+        data-zh="在真实与AI人脸之间比较空间频率分布差异，并引入视觉滤波模拟检验其可感知性。">在真实与AI人脸之间比较空间频率分布差异，并引入视觉滤波模拟检验其可感知性。</p>
+
+      <h3 data-en="Method" data-zh="方法">方法</h3>
+      <p data-en="Perform Fourier transform on images, extract power spectral density functions to characterize frequency-energy distribution relationships; further introduce contrast sensitivity function to weight the spectrum, simulating the frequency response characteristics of the human visual system."
+        data-zh="对图像执行傅里叶变换，提取功率谱密度函数以刻画频率—能量分布关系；进一步引入对比敏感度函数对频谱进行加权，以模拟人类视觉系统的频率响应特性。">
+        对图像执行傅里叶变换，提取功率谱密度函数以刻画频率—能量分布关系；进一步引入对比敏感度函数对频谱进行加权，以模拟人类视觉系统的频率响应特性。</p>
+
+      <h3 data-en="Metrics" data-zh="指标">指标</h3>
+      <p data-en="Compare energy distribution across different frequency bands and their effect size changes."
+        data-zh="比较不同频段能量分布及其效应量变化。">比较不同频段能量分布及其效应量变化。</p>
+
+      <h3 data-en="Results" data-zh="结果">结果</h3>
+      <div class="img-row">
+        <div class="img-container">
+          <img src="project2/original image.png" alt="原始图像对比" class="zoomable">
+          <div class="sticky-note" data-en="Original Images" data-zh="原始图像">原始图像</div>
+        </div>
+        <div class="img-container">
+          <img src="project2/original 高滤波.png" alt="高频滤波结果" class="zoomable">
+          <div class="sticky-note" data-en="High-pass Filter" data-zh="高频滤波">高频滤波</div>
+        </div>
+        <div class="img-container">
+          <img src="project2/effectness.png" alt="效应量分析" class="zoomable">
+          <div class="sticky-note" data-en="Effect Size" data-zh="效应量">效应量</div>
+        </div>
+      </div>
+
+      <p data-en="Results showed that AI faces exhibit significant energy gain in the mid-to-high frequency range, with effect sizes reaching large effect levels (|d| > 1.5)."
+        data-zh="结果表明，AI人脸在中高频范围内存在显著能量增益，效应量达到大效应水平（|d| > 1.5）。">结果表明，AI人脸在中高频范围内存在显著能量增益，效应量达到大效应水平（|d| > 1.5）。</p>
+    </div>
+
+    <!-- 卡片5 -->
+    <div class="card">
+      <h2 data-en="Experiment 2: CSF Filtering Results" data-zh="实验2：CSF滤波结果">实验2：CSF滤波结果</h2>
+      <div class="img-row">
+        <div class="img-container">
+          <img src="project2/CSF image.png" alt="CSF滤波图像" class="zoomable">
+          <div class="sticky-note" data-en="CSF Filtered" data-zh="CSF滤波">CSF滤波</div>
+        </div>
+        <div class="img-container">
+          <img src="project2/CSF1.png" alt="CSF函数曲线" class="zoomable">
+          <div class="sticky-note" data-en="CSF Curve" data-zh="CSF曲线">CSF曲线</div>
+        </div>
+        <div class="img-container">
+          <img src="project2/Effect sizes.png" alt="效应量变化" class="zoomable">
+          <div class="sticky-note" data-en="Effect Size" data-zh="效应量">效应量</div>
+        </div>
+      </div>
+
+      <p data-en="After introducing visual contrast sensitivity function weighting, the difference was further amplified (|d| ≈ 3.0)."
+        data-zh="在引入视觉对比敏感度函数进行加权后，差异进一步放大（|d| ≈ 3.0）。">在引入视觉对比敏感度函数进行加权后，差异进一步放大（|d| ≈ 3.0）。</p>
+
+      <div class="img-container">
+        <img src="project2/statistical significance.png" alt="统计显著性检验" class="zoomable">
+        <div class="sticky-note" data-en="Significance" data-zh="显著性">显著性</div>
+      </div>
+
+      <p data-en="This result indicates that generated images have stable statistical anomalies at the physical level, but these anomalies are not effectively utilized by human behavioral performance."
+        data-zh="该结果说明，生成图像在物理层面存在稳定的统计异常，但该异常未能被人类行为表现有效利用。">该结果说明，生成图像在物理层面存在稳定的统计异常，但该异常未能被人类行为表现有效利用。</p>
+    </div>
+
+    <!-- 卡片6 -->
+    <div class="card">
+      <h2 data-en="Experiment 3: Cross-Layer Computational Modeling" data-zh="实验3：跨层计算建模">实验3：跨层计算建模</h2>
+      <h3 data-en="Design" data-zh="设计">设计</h3>
+      <p data-en="Construct a cross-layer model from frequency features to perceptual decisions, testing whether physical information influences judgment results through the representational layer."
+        data-zh="构建从频域特征到知觉决策的跨层模型，检验物理信息是否通过表征层影响判断结果。">构建从频域特征到知觉决策的跨层模型，检验物理信息是否通过表征层影响判断结果。</p>
+
+      <h3 data-en="Method" data-zh="方法">方法</h3>
+      <p data-en="Extract multi-band frequency features as input variables, obtain high-dimensional representation vectors using visual models, and characterize representational shift by prototype distance; establish regression models and test mediation paths through Bootstrap."
+        data-zh="提取图像多频段特征作为输入变量，并利用视觉模型获得高维表征向量，以原型距离刻画表征偏移；在此基础上建立回归模型，并通过Bootstrap检验中介路径。">
+        提取图像多频段特征作为输入变量，并利用视觉模型获得高维表征向量，以原型距离刻画表征偏移；在此基础上建立回归模型，并通过Bootstrap检验中介路径。</p>
+
+      <h3 data-en="Metrics" data-zh="指标">指标</h3>
+      <p data-en="Path relationships and significance among frequency features, representational shift, and decision results."
+        data-zh="频域特征、表征偏移与决策结果之间的路径关系及其显著性。">频域特征、表征偏移与决策结果之间的路径关系及其显著性。</p>
+
+      <h3 data-en="Results" data-zh="结果">结果</h3>
+      <div class="img-row">
+        <div class="img-container">
+          <img src="project2/decision score Distribution.png" alt="决策得分分布" class="zoomable">
+          <div class="sticky-note" data-en="Decision Distribution" data-zh="决策分布">决策分布</div>
+        </div>
+        <div class="img-container">
+          <img src="project2/CLIP embeddings.png" alt="CLIP嵌入空间" class="zoomable">
+          <div class="sticky-note" data-en="Representation Space" data-zh="表征空间">表征空间</div>
+        </div>
+      </div>
+
+      <p data-en="At the representational level, high-dimensional embeddings were extracted using visual models, with real face means serving as prototype references; results showed AI faces systematically shifted toward real prototypes in representation space."
+        data-zh="在表征层，利用视觉模型提取高维嵌入，并以真实人脸均值构建原型参照；结果显示，AI人脸在表征空间中系统性向真实原型靠近。">
+        在表征层，利用视觉模型提取高维嵌入，并以真实人脸均值构建原型参照；结果显示，AI人脸在表征空间中系统性向真实原型靠近。</p>
+    </div>
+
+    <!-- 卡片7 -->
+    <div class="card">
+      <h2 data-en="Experiment 3: Mediation Analysis Results" data-zh="实验3：中介分析结果">实验3：中介分析结果</h2>
+      <div class="img-container">
+        <img src="project2/mediation diagram.png" alt="中介模型路径图" class="zoomable">
+        <div class="sticky-note" data-en="Mediation Path" data-zh="中介路径">中介路径</div>
+      </div>
+
+      <p data-en="Note: All path coefficients (Path a, b, c, c') and the final indirect effect appear as 0.0000 when rounded to four decimal places, due to the large magnitude difference between independent and dependent variables. Although the absolute effect is small, it is statistically significant because the 95% confidence interval (CI) falls entirely in the negative range without crossing zero."
+        data-zh="<strong>说明：</strong>图中各项路径系数（Path a, b, c, c'）及最终的间接效应在四舍五入至万分位后均呈现为 0.0000，这是由自变量与因变量之间的量纲差异极大所致。尽管效应绝对值微小，但由于其 95% 置信区间（CI）完全落于负数区间且未跨越 0 点，因此在统计学上判定为显著。">
+        <strong>说明：</strong>图中各项路径系数（Path a, b, c, c'）及最终的间接效应在四舍五入至万分位后均呈现为 0.0000，这是由自变量与因变量之间的量纲差异极大所致。尽管效应绝对值微小，但由于其
+        95% 置信区间（CI）完全落于负数区间且未跨越 0 点，因此在统计学上判定为显著。</p>
+
+      <div class="img-container">
+        <img src="project2/bootstrap.png" alt="Bootstrap检验结果" class="zoomable">
+        <div class="sticky-note">Bootstrap</div>
+      </div>
+
+      <p data-en="At the decision level, representational position was significantly correlated with discrimination results (r = -0.307, p < .001). Mediation analysis showed that frequency features indirectly influenced decision output through representational shift, with path effects remaining stable in Bootstrap testing."
+        data-zh="在决策层，表征位置与判别结果显著相关（r = -0.307, p < .001）。中介分析表明，频域特征通过表征偏移间接影响决策输出，路径效应在Bootstrap检验中稳定存在。">
+        在决策层，表征位置与判别结果显著相关（r = -0.307, p < .001）。中介分析表明，频域特征通过表征偏移间接影响决策输出，路径效应在Bootstrap检验中稳定存在。</p>
+          <p data-en="This result indicates that low-level statistical anomalies were not ignored, but rather participated in decision formation through representational reconstruction."
+            data-zh="该结果表明，底层统计异常并未被忽略，而是通过表征重构参与了决策形成。">该结果表明，底层统计异常并未被忽略，而是通过表征重构参与了决策形成。</p>
+    </div>
+
+    <!-- 卡片8 -->
+    <div class="card">
+      <h2 data-en="Summary" data-zh="总结">总结</h2>
+      <p data-en="This study systematically reveals the mechanisms behind humans' difficulty in distinguishing high-fidelity AI-generated faces, from behavioral decisions to visual filtering to deep representations."
+        data-zh="本研究从行为决策、视觉滤波到深层表征，系统揭示了人类难以分辨高保真AI生成人脸的机制原因。">本研究从行为决策、视觉滤波到深层表征，系统揭示了人类难以分辨高保真AI生成人脸的机制原因。</p>
+
+      <h3 data-en="Experiment 1" data-zh="实验一">实验一</h3>
+      <p data-en="Participants' accuracy for AI faces was significantly lower than for real faces, with an unbiased decision starting point. Misjudgments stemmed from AI faces' own features driving faster evidence accumulation, not subjective bias."
+        data-zh="被试对AI人脸的准确率显著低于真实人脸，且决策起点无偏，误判源于AI人脸自身特征驱动了证据积累速度更快，而非主观偏见。">
+        被试对AI人脸的准确率显著低于真实人脸，且决策起点无偏，误判源于AI人脸自身特征驱动了证据积累速度更快，而非主观偏见。</p>
+
+      <h3 data-en="Experiment 2" data-zh="实验二">实验二</h3>
+      <p data-en="AI faces showed significant energy accumulation in mid-to-high frequency bands, and the human contrast sensitivity function amplified this physical difference to an effect size of 3.0, indicating that physical anomalies lie in frequency bands sensitive to the human eye but are not effectively utilized."
+        data-zh="AI人脸在中高频段存在显著能量堆积，且人眼对比敏感度函数会将这一物理差异放大至效应量3.0，说明物理异常位于人眼敏感频段但未被有效利用。">
+        AI人脸在中高频段存在显著能量堆积，且人眼对比敏感度函数会将这一物理差异放大至效应量3.0，说明物理异常位于人眼敏感频段但未被有效利用。</p>
+
+      <h3 data-en="Experiment 3" data-zh="实验三">实验三</h3>
+      <p data-en="A cross-layer mediation model was constructed, revealing that frequency anomalies shift high-dimensional representations toward real face prototypes, thereby influencing perceptual judgments and forming a complete causal chain."
+        data-zh="构建跨层中介模型，发现频域异常通过改变高维表征向真实人脸原型偏移，进而影响知觉判断，形成完整因果链条。">
+        构建跨层中介模型，发现频域异常通过改变高维表征向真实人脸原型偏移，进而影响知觉判断，形成完整因果链条。</p>
+
+      <p style="margin-top: 30px; font-weight: bold;"
+        data-en="The three experiments integrate computational modeling and visual simulation, demonstrating that discriminative cues are fully preserved in visual representations, but humans are misled by representational-level camouflage and ignore low-level statistical evidence, providing new insights into perceptual limitations in human-AI interaction."
+        data-zh="三项实验整合计算建模与视觉模拟，证明判别线索完整保留于视觉表征中，但人类被表征层面的伪装误导而忽略底层统计证据，为理解人机交互中的感知局限提供了新依据。">
+        三项实验整合计算建模与视觉模拟，证明判别线索完整保留于视觉表征中，但人类被表征层面的伪装误导而忽略底层统计证据，为理解人机交互中的感知局限提供了新依据。</p>
+    </div>
+
+    <div class="buttons">
+      <button class="btn" id="prevBtn">← Previous</button>
+      <button class="btn" id="nextBtn">Next →</button>
+    </div>
+
+    <div class="dots">
+      <span class="dot active-dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+  </div>
+
+  <div class="img-modal">
+    <img src="" alt="放大图片">
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll(".card");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const dots = document.querySelectorAll(".dot");
+    const imgModal = document.querySelector(".img-modal");
+    const modalImg = imgModal.querySelector("img");
+
+    let current = 0;
+
+    function updateCards() {
+      cards.forEach((card, i) => {
+        card.classList.remove("active", "next", "exit");
+        if (i === current) {
+          card.classList.add("active");
+        } else if (i === current + 1) {
+          card.classList.add("next");
+        } else {
+          card.classList.add("exit");
+        }
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active-dot", i === current);
+      });
+    }
+
+    function next() {
+      if (current < cards.length - 1) {
+        current++;
+        updateCards();
+      }
+    }
+
+    function prev() {
+      if (current > 0) {
+        current--;
+        updateCards();
+      }
+    }
+
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener("click", () => {
+        current = i;
+        updateCards();
+      });
+    });
+
+    document.querySelectorAll(".zoomable").forEach(img => {
+      img.addEventListener("click", (e) => {
+        e.stopPropagation();
+        modalImg.src = img.src;
+        imgModal.classList.add("show");
+      });
+    });
+
+    imgModal.addEventListener("click", () => {
+      imgModal.classList.remove("show");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "Escape") imgModal.classList.remove("show");
+    });
+
+    // Language switching
+    const langBtns = document.querySelectorAll(".lang-btn");
+    let currentLang = "zh";
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      document.querySelectorAll("[data-en]").forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+      });
+      langBtns.forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-lang") === lang);
+      });
+    }
+
+    langBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchLanguage(btn.getAttribute("data-lang"));
+      });
+    });
+
+    updateCards();
+  </script>
+
+</body>
+
+</html>

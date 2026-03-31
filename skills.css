@@ -1,0 +1,267 @@
+.page-header {
+    text-align: center;
+    margin: 60px 0 40px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.page-header p {
+    font-size: 1.1rem;
+    opacity: 0.7;
+    color: #2c3e50;
+}
+
+.tap-notice {
+    position: absolute;
+    top: 180px;
+    left: 50%;
+    transform: translateX(-280px);
+    background: #fff2d68c;
+    color: #8b6f47;
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #d4a574;
+}
+
+.skills-carousel {
+    position: relative;
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.carousel-viewport {
+    overflow: hidden;
+    width: 100%;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.skill-card {
+    flex: 0 0 100%;
+    padding: 0 20px;
+    perspective: 1500px;
+    cursor: pointer;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.skill-card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    padding: 40px;
+    background: linear-gradient(135deg, rgba(250, 252, 254, 0.98) 0%, rgba(240, 245, 250, 0.98) 100%);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-front {
+    text-align: center;
+}
+
+.card-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.card-front h2 {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    color: #fff;
+    background: #d4a574;
+    padding: 10px 24px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* 卡片1 - 莫兰迪驼色 */
+.skill-card:nth-child(1) .card-front h2 {
+    background: #f4a596;
+}
+
+.skill-card:nth-child(1) .card-front,
+.skill-card:nth-child(1) .card-back {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 249, 249, 0.98) 100%);
+}
+
+/* 卡片2 - 莫兰迪蓝灰 */
+.skill-card:nth-child(2) .card-front h2 {
+    background: #8ea0ef;
+}
+
+.skill-card:nth-child(2) .card-front,
+.skill-card:nth-child(2) .card-back {
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.98) 0%, rgba(240, 243, 247, 0.98) 100%);
+}
+
+/* 卡片3 - 莫兰迪灰褐 */
+.skill-card:nth-child(3) .card-front h2 {
+    background: #bfdebc;
+}
+
+.skill-card:nth-child(3) .card-front,
+.skill-card:nth-child(3) .card-back {
+    background: linear-gradient(135deg, rgba(250, 248, 247, 0.98) 0%, rgba(243, 240, 238, 0.98) 100%);
+}
+
+/* 卡片4 - 莫兰迪紫灰 */
+.skill-card:nth-child(4) .card-front h2 {
+    background: #cca9d6;
+}
+
+.skill-card:nth-child(4) .card-front,
+.skill-card:nth-child(4) .card-back {
+    background: linear-gradient(135deg, rgba(250, 248, 250, 0.98) 0%, rgba(243, 240, 243, 0.98) 100%);
+}
+
+/* 卡片5 - 莫兰迪绿灰 */
+.skill-card:nth-child(5) .card-front h2 {
+    background: #a8b5a8;
+}
+
+.skill-card:nth-child(5) .card-front,
+.skill-card:nth-child(5) .card-back {
+    background: linear-gradient(135deg, rgba(248, 250, 248, 0.98) 0%, rgba(240, 243, 240, 0.98) 100%);
+}
+
+.card-back {
+    transform: rotateY(180deg);
+    text-align: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 40px;
+}
+
+.card-back h3 {
+    display: none;
+}
+
+.card-back p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #2c3e50;
+}
+
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.carousel-arrow:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-arrow.left {
+    left: -70px;
+}
+
+.carousel-arrow.right {
+    right: -70px;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.dot.active {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.3);
+}
+
+@media (max-width: 768px) {
+    .carousel-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .carousel-arrow.left {
+        left: 10px;
+    }
+
+    .carousel-arrow.right {
+        right: 10px;
+    }
+
+    .card-inner {
+        height: 450px;
+    }
+
+    .card-front h2 {
+        font-size: 1.5rem;
+    }
+
+    .card-icon {
+        font-size: 3rem;
+    }
+
+    .card-back p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .card-inner {
+        height: 400px;
+    }
+
+    .card-front,
+    .card-back {
+        padding: 30px;
+    }
+}
